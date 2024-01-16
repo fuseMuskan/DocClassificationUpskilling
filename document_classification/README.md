@@ -1,3 +1,10 @@
+# DATASET
+
+Dataset was collected and downloaded from google.
+It can be accessed here: <a href = "https://drive.google.com/drive/folders/1MawKiWPK_0ZAaHWZbgQMsOc23id6n2UF?usp=sharing">DatasetLink </a>
+
+
+
 # USAGE
 
 * EPOCHS = num of epochs
@@ -26,5 +33,6 @@ Note: The dataloader expects the following directory structure:
       - license/
       - passport/
       - others/
+
 
 
