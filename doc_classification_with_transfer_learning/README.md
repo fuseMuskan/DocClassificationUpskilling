@@ -31,7 +31,14 @@ Note: The dataloader expects the following directory structure:
       - others/
 
 # USAGE
+
 You can use the following notebook to fine tune the models: <a href = "https://github.com/fuseMuskan/DocClassificationUpskilling/blob/main/doc_classification_with_transfer_learning/document_classification_with_transfer_learning.ipynb"> Notebook </a>
+
+## INSTALLING REQUIREMENTS
+
+```
+pip install -r requirements.txt
+```
 
 ## RUNNING INFERENCE
 
