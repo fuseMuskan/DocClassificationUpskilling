@@ -1,3 +1,6 @@
+# Introduction
+Train a model from scratch for document classification.
+
 # DATASET
 
 Dataset was collected and downloaded from google.
