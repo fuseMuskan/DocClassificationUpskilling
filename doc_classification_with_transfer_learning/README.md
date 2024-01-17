@@ -32,7 +32,10 @@ Note: The dataloader expects the following directory structure:
 
 # USAGE
 
-You can use the following notebook to fine tune the models: <a href = "https://github.com/fuseMuskan/DocClassificationUpskilling/blob/main/doc_classification_with_transfer_learning/document_classification_with_transfer_learning.ipynb"> Notebook </a>
+* You can use the following notebook to fine tune the models: <a href = "https://github.com/fuseMuskan/DocClassificationUpskilling/blob/main/doc_classification_with_transfer_learning/document_classification_with_transfer_learning.ipynb"> Notebook </a>
+
+* To save the model, we can use <a href = "https://github.com/fuseMuskan/DocClassificationUpskilling/blob/main/doc_classification_with_transfer_learning/document_classification.ipynb">Notebook</a>
+
 
 ## INSTALLING REQUIREMENTS
 
