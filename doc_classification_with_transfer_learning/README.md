@@ -33,10 +33,14 @@ Note: The dataloader expects the following directory structure:
 # USAGE
 You can use the following notebook to fine tune the models: <a href = "https://github.com/fuseMuskan/DocClassificationUpskilling/blob/main/doc_classification_with_transfer_learning/document_classification_with_transfer_learning.ipynb"> Notebook </a>
 
+## RUNNING INFERENCE
+
+```
+python doc_classify.py --model_path=path/to_your_model/model_name.onnx --image_path=path/to_the_document_image/image.jpg
+```
+
 # REFERENCES
 * https://pytorch.org/vision/stable/transforms.html#v2-api-ref
 * https://pytorch.org/vision/stable/models.html#table-of-all-available-classification-weights
 * https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-
-
-
+* https://thenewstack.io/tutorial-using-a-pre-trained-onnx-model-for-inferencing/
