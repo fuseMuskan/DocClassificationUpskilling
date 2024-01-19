@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from eval import calculate_confusion_matrix
 
 """
 Contains functions for training and testing a Pytorch model
@@ -18,6 +19,8 @@ def train_step(
 
     # Setup train loss and train accuracy values
     train_loss, train_acc = 0, 0
+
+    confusion_matrix = torch.zeros((4, 4), dtype=torch.float32)
 
     # Loop through data loader data batches
     for batch, (X, y) in enumerate(dataloader):
@@ -44,10 +47,12 @@ def train_step(
         y_pred_class = torch.argmax(torch.softmax(y_pred, dim=1), dim=1)
         train_acc += (y_pred_class == y).sum().item() / len(y_pred)
 
+        confusion_matrix += calculate_confusion_matrix(y_pred_class, y)
+
     # Adjust metrics to get average loss and accuracy per batch
     train_loss = train_loss / len(dataloader)
     train_acc = train_acc / len(dataloader)
-    return train_loss, train_acc
+    return train_loss, train_acc, confusion_matrix
 
 
 def test_step(
@@ -61,6 +66,8 @@ def test_step(
 
     # Setup test loss and test accuracy values
     test_loss, test_acc = 0, 0
+
+    confusion_matrix = torch.zeros((4, 4), dtype=torch.float32)
 
     # Turn on inference context manager
     with torch.inference_mode():
@@ -79,11 +86,12 @@ def test_step(
             # Calculate and accumulate accuracy
             test_pred_labels = test_pred_logits.argmax(dim=1)
             test_acc += (test_pred_labels == y).sum().item() / len(test_pred_labels)
+            confusion_matrix += calculate_confusion_matrix(test_pred_labels, y)
 
     # Adjust metrics to get average loss and accuracy per batch
     test_loss = test_loss / len(dataloader)
     test_acc = test_acc / len(dataloader)
-    return test_loss, test_acc
+    return test_loss, test_acc, confusion_matrix
 
 
 from tqdm.auto import tqdm
@@ -106,14 +114,14 @@ def train(
 
     # 3. Loop through training and testing steps for a number of epochs
     for epoch in tqdm(range(epochs)):
-        train_loss, train_acc = train_step(
+        train_loss, train_acc, train_conf_matrix = train_step(
             model=model,
             device=device,
             dataloader=train_dataloader,
             loss_fn=loss_fn,
             optimizer=optimizer,
         )
-        test_loss, test_acc = test_step(
+        test_loss, test_acc, test_conf_matrix = test_step(
             model=model, dataloader=test_dataloader, loss_fn=loss_fn, device=device
         )
 
@@ -131,6 +139,12 @@ def train(
         results["train_acc"].append(train_acc)
         results["test_loss"].append(test_loss)
         results["test_acc"].append(test_acc)
+
+        # Print and log confusion matrices
+        print("Train Confusion Matrix:")
+        print(train_conf_matrix)
+        print("Test Confusion Matrix:")
+        print(test_conf_matrix)
 
         if track_experiment:
             # Experiment tracking

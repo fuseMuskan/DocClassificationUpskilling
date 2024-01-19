@@ -1,8 +1,23 @@
 """
-Contains various utility functions for PyTorch model training and saving
+Contains various utility functions for PyTorch model saving
 """
 import torch
 from pathlib import Path
+from torch.utils.tensorboard import SummaryWriter
+
+
+def create_writer(experiment_name: str, model_name: str, extra: str = None):
+    from datetime import datetime
+    import os
+
+    timestamp = datetime.now().strftime("%Y-%m-%d")
+    if extra:
+        log_dir = os.path.join("runs", timestamp, experiment_name, model_name, extra)
+    else:
+        log_dir = os.path.join("runs", timestamp, experiment_name, model_name)
+
+    print(f"[INFO] Created SummaryWriter, saving to: {log_dir}......")
+    return SummaryWriter(log_dir=log_dir)
 
 
 def save_model(model: torch.nn.Module, target_dir: str, model_name: str):
