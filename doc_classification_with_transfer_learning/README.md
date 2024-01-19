@@ -49,7 +49,7 @@ pip install -r requirements.txt
 * EPOCHS = num of epochs
 * BATCH_SIZE = batch size
 * DATA_DIR = directory that contains the dataset
-* LEARNING_RATE =
+* LEARNING_RATE = learning rate used in the optimizer
 * OUTPUT_MODEL = the name of the model to be saved after training
 
 ```

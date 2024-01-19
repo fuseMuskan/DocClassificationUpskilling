@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--MODEL", type=str, help="Model name [Alexnet, Resnet,...]")
 parser.add_argument("--EPOCHS", type=int, help="Number of epochs for training")
 parser.add_argument("--BATCH_SIZE", type=int, help="Batch size for training")
+parser.add_argument("--LEARNING_RATE", type=float, help="Learning rate")
 parser.add_argument("--DATA_DIR", type=str, help="Path to the data directory")
 parser.add_argument("--OUTPUT_MODEL", type=str, help="Name of the model to be saved")
 
@@ -26,8 +27,7 @@ args = parser.parse_args()
 MODEL_NAME = args.MODEL
 EPOCHS = args.EPOCHS
 BATCH_SIZE = args.BATCH_SIZE
-LEARNING_RATE = 0.001
-# LEARNING_RATE = args.LEARNING_RATE
+LEARNING_RATE = args.LEARNING_RATE
 DATA_DIR = args.DATA_DIR
 OUTPUT_MODEL = args.OUTPUT_MODEL
 
