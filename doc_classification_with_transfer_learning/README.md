@@ -43,6 +43,19 @@ Note: The dataloader expects the following directory structure:
 pip install -r requirements.txt
 ```
 
+## FINE TUNING MODEL
+
+* MODEL = name of the model to choose ["resnet", "alexnet", "vgg", "squeeznet", "densenet"]
+* EPOCHS = num of epochs
+* BATCH_SIZE = batch size
+* DATA_DIR = directory that contains the dataset
+* LEARNING_RATE =
+* OUTPUT_MODEL = the name of the model to be saved after training
+
+```
+python train.py --MODEL="resnet" --EPOCHS=5 --BATCH_SIZE=1 --DATA_DIR=F:\ApprecentishipProgram\DocumentClassificationUp\DocClassificationUpskilling\dataset --OUTPUT_MODEL=model_1
+```
+
 ## RUNNING INFERENCE
 
 ```
