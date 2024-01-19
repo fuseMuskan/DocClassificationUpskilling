@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from eval import calculate_confusion_matrix
+from eval import calculate_confusion_matrix, save_confusion_matrix
 
 """
 Contains functions for training and testing a Pytorch model
@@ -146,6 +146,10 @@ def train(
         print("Test Confusion Matrix:")
         print(test_conf_matrix)
 
+        # generate images of confusion marix
+        train_conf_fig = save_confusion_matrix(train_conf_matrix)
+        test_conf_fig = save_confusion_matrix(test_conf_matrix)
+
         if track_experiment:
             # Experiment tracking
             # Add loss results to SummaryWriter
@@ -154,6 +158,10 @@ def train(
                 tag_scalar_dict={"train_loss": train_loss, "test_loss": test_loss},
                 global_step=epoch,
             )
+
+            # Add confusion matrix image to SummaryWriter
+            writer.add_figure("train_conf_fig", train_conf_fig, global_step=epoch)
+            writer.add_figure("test_conf_fig", test_conf_fig, global_step=epoch)
 
             # Add accuracy results to SummaryWriter
             writer.add_scalars(
