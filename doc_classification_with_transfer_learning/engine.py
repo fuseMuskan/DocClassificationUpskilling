@@ -140,11 +140,11 @@ def train(
         results["test_loss"].append(test_loss)
         results["test_acc"].append(test_acc)
 
-        # Print and log confusion matrices
-        print("Train Confusion Matrix:")
-        print(train_conf_matrix)
-        print("Test Confusion Matrix:")
-        print(test_conf_matrix)
+        # # Print and log confusion matrices
+        # print("Train Confusion Matrix:")
+        # print(train_conf_matrix)
+        # print("Test Confusion Matrix:")
+        # print(test_conf_matrix)
 
         # generate images of confusion marix
         train_conf_fig = save_confusion_matrix(train_conf_matrix)
