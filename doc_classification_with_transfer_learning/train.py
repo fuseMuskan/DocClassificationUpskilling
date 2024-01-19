@@ -74,6 +74,7 @@ engine.train(
     epochs=EPOCHS,
     writer=writer,
     device=device,
+    model_name=MODEL_NAME,
 )
 
 # Save the model with help from utils.py

@@ -1,6 +1,10 @@
 import torch
 from torch import nn
-from eval import calculate_confusion_matrix, save_confusion_matrix
+from eval import (
+    calculate_confusion_matrix,
+    save_confusion_matrix,
+    compute_classification_report,
+)
 
 """
 Contains functions for training and testing a Pytorch model
@@ -105,6 +109,7 @@ def train(
     device: torch.device,
     epochs: int,
     writer,
+    model_name: str,
     loss_fn: torch.nn.Module = nn.CrossEntropyLoss(),
     track_experiment: bool = True,
 ):
@@ -181,6 +186,21 @@ def train(
             writer.close()
         else:
             pass
+
+    final_model = model.to(device).eval()
+
+    y_true, y_pred = [], []
+    with torch.no_grad():
+        for batch, (X, y) in enumerate(test_dataloader):
+            X, y = X.to(device), y.to(device)
+            output = final_model(X)
+            y_true.extend(y.cpu().numpy())
+            y_pred.extend(torch.argmax(output, dim=1).cpu().numpy())
+
+    # Use the compute_classification_report function
+    compute_classification_report(
+        torch.tensor(y_pred), torch.tensor(y_true), model_name=model_name
+    )
 
     # 6. Return the filled results at the end of the epochs
     return results
