@@ -23,7 +23,7 @@ Note: The dataloader expects the following directory structure:
       - license/
       - passport/
       - others/
-    -validation/
+    - validation/
       - citizenship/
         - image01.jpeg
         - ...
