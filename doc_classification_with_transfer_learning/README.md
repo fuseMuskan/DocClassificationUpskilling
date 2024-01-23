@@ -24,6 +24,13 @@ Note: The dataloader expects the following directory structure:
       - license/
       - passport/
       - others/
+    -validation/
+      - citizenship/
+        - image01.jpeg
+        - ...
+      - license/
+      - passport/
+      - others/
     - test/
       - citizenship/
       - license/
@@ -40,6 +47,7 @@ Note: The dataloader expects the following directory structure:
 ## INSTALLING REQUIREMENTS
 
 ```
+cd ..
 pip install -r requirements.txt
 ```
 
@@ -51,9 +59,10 @@ pip install -r requirements.txt
 * DATA_DIR = directory that contains the dataset
 * LEARNING_RATE = learning rate used in the optimizer
 * OUTPUT_MODEL = the name of the model to be saved after training
+* USE_CLASS_WEIGHTS = (True of False) if True uses the class weights else doesnot use the class weights
 
 ```
-python train.py --MODEL="resnet" --EPOCHS=5 --BATCH_SIZE=1 --DATA_DIR=F:\ApprecentishipProgram\DocumentClassificationUp\DocClassificationUpskilling\dataset --OUTPUT_MODEL=model_1
+python train.py --MODEL="resnet" --EPOCHS=5 --BATCH_SIZE=1 --DATA_DIR=F:\ApprecentishipProgram\DocumentClassificationUp\DocClassificationUpskilling\dataset --OUTPUT_MODEL=model_1 --USE_CLASS_WEIGHTS=True
 ```
 
 ## RUNNING INFERENCE
