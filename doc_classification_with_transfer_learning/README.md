@@ -2,7 +2,6 @@
 Fine tune different model for document classification.
 Following models were fine-tuned under different hyperparameters and the experiment was tracked using tensorboard:
 * ResNet
-* Inception v3
 * Densenet
 * VGG11_bn
 * Squeezenet
@@ -70,6 +69,11 @@ python train.py --MODEL="resnet" --EPOCHS=5 --BATCH_SIZE=1 --DATA_DIR=F:\Apprece
 ```
 python doc_classify.py --model_path=path/to_your_model/model_name.onnx --image_path=path/to_the_document_image/image.jpg
 ```
+
+## LOGS
+Different evaluation metrics like classification report, confusion matrix and loss were tracked on tensorboard and can be accesed here:-<br>
+* <a href = "https://drive.google.com/drive/folders/1UgaCPBt3jjixTcxc3Nk4i6Q6puc7TSWp?usp=sharing">Runs (for locally running tensorboard)</a>
+* <a href = "https://drive.google.com/drive/folders/1nr9RNolX5_D6TNolKoOuW8NFuTz1bZdb?usp=sharing">Classification Report</a>
 
 # REFERENCES
 * https://pytorch.org/vision/stable/transforms.html#v2-api-ref
