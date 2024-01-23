@@ -9,10 +9,10 @@ import data_setup
 import pathlib
 
 
-def train_test_dataloader(input_size, train_dir, test_dir):
+def train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size):
     custom_transforms = transforms.Compose(
         [
-            transforms.Resize((224, 224)),
+            transforms.Resize((input_size, input_size)),
             transforms.RandomRotation(75),
             transforms.RandomHorizontalFlip(0.6),
             transforms.RandomVerticalFlip(0.6),
@@ -26,17 +26,22 @@ def train_test_dataloader(input_size, train_dir, test_dir):
                 degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=10
             ),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
     print("[INFO] Preparing Data Loaders")
-    train_dataloader, test_dataloader, class_names = data_setup.create_dataloaders(
+    (
+        train_dataloader,
+        val_dataloader,
+        test_dataloader,
+        class_names,
+    ) = data_setup.create_dataloaders(
         train_dir=train_dir,
+        val_dir=val_dir,
         test_dir=test_dir,
         transform=custom_transforms,
-        batch_size=4,
+        batch_size=batch_size,
     )
-    return train_dataloader, test_dataloader, class_names
+    return train_dataloader, val_dataloader, test_dataloader, class_names
 
 
 def set_parameter_requires_grad(model, feature_extracting):
@@ -51,6 +56,8 @@ def initialize_model(
     feature_extract: bool,
     train_dir,
     test_dir,
+    val_dir,
+    batch_size,
     use_pretrained=True,
 ):
     # Initialize these variables which will be set in this if statement. Each of these
@@ -68,9 +75,12 @@ def initialize_model(
         model_ft.fc = nn.Linear(num_ftrs, num_classes)
         input_size = 224
 
-        train_dataloader, test_dataloader, class_names = train_test_dataloader(
-            input_size, train_dir, test_dir
-        )
+        (
+            train_dataloader,
+            val_dataloader,
+            test_dataloader,
+            class_names,
+        ) = train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size)
 
     elif model_name == "alexnet":
         """Alexnet"""
@@ -80,9 +90,12 @@ def initialize_model(
         model_ft.classifier[6] = nn.Linear(num_ftrs, num_classes)
         input_size = 224
 
-        train_dataloader, test_dataloader, class_names = train_test_dataloader(
-            input_size, train_dir, test_dir
-        )
+        (
+            train_dataloader,
+            val_dataloader,
+            test_dataloader,
+            class_names,
+        ) = train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size)
 
     elif model_name == "vgg":
         """VGG11_bn"""
@@ -92,9 +105,12 @@ def initialize_model(
         model_ft.classifier[6] = nn.Linear(num_ftrs, num_classes)
         input_size = 224
 
-        train_dataloader, test_dataloader, class_names = train_test_dataloader(
-            input_size, train_dir, test_dir
-        )
+        (
+            train_dataloader,
+            val_dataloader,
+            test_dataloader,
+            class_names,
+        ) = train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size)
 
     elif model_name == "squeezenet":
         """Squeezenet"""
@@ -106,9 +122,12 @@ def initialize_model(
         model_ft.num_classes = num_classes
         input_size = 224
 
-        train_dataloader, test_dataloader, class_names = train_test_dataloader(
-            input_size, train_dir, test_dir
-        )
+        (
+            train_dataloader,
+            val_dataloader,
+            test_dataloader,
+            class_names,
+        ) = train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size)
 
     elif model_name == "densenet":
         """Densenet"""
@@ -118,12 +137,22 @@ def initialize_model(
         model_ft.classifier = nn.Linear(num_ftrs, num_classes)
         input_size = 224
 
-        train_dataloader, test_dataloader, class_names = train_test_dataloader(
-            input_size, train_dir, test_dir
-        )
+        (
+            train_dataloader,
+            val_dataloader,
+            test_dataloader,
+            class_names,
+        ) = train_test_dataloader(input_size, train_dir, test_dir, val_dir, batch_size)
 
     else:
         print("Invalid model name, exiting...")
         exit()
 
-    return model_ft, input_size, train_dataloader, test_dataloader, class_names
+    return (
+        model_ft,
+        input_size,
+        train_dataloader,
+        val_dataloader,
+        test_dataloader,
+        class_names,
+    )

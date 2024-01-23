@@ -8,6 +8,7 @@ import data_setup, engine, model_builder, utils
 from pathlib import Path
 from torchvision import transforms
 from utils import create_writer
+import custom_focal_loss
 
 # Extracting argparse values
 
@@ -18,6 +19,11 @@ parser.add_argument("--EPOCHS", type=int, help="Number of epochs for training")
 parser.add_argument("--BATCH_SIZE", type=int, help="Batch size for training")
 parser.add_argument("--LEARNING_RATE", type=float, help="Learning rate")
 parser.add_argument("--DATA_DIR", type=str, help="Path to the data directory")
+parser.add_argument(
+    "--USE_CLASS_WEIGHTS",
+    type=bool,
+    help="if True Uses Focal Loss Function with class weights",
+)
 parser.add_argument("--OUTPUT_MODEL", type=str, help="Name of the model to be saved")
 
 
@@ -29,6 +35,7 @@ EPOCHS = args.EPOCHS
 BATCH_SIZE = args.BATCH_SIZE
 LEARNING_RATE = args.LEARNING_RATE
 DATA_DIR = args.DATA_DIR
+USE_CLASS_WEIGHTS = args.USE_CLASS_WEIGHTS
 OUTPUT_MODEL = args.OUTPUT_MODEL
 
 
@@ -36,6 +43,7 @@ OUTPUT_MODEL = args.OUTPUT_MODEL
 data_path = Path(DATA_DIR)
 train_dir = data_path / "train"
 test_dir = data_path / "test"
+val_dir = data_path / "validation"
 
 # Setup target device
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -45,6 +53,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
     model,
     input_size,
     train_dataloader,
+    val_dataloader,
     test_dataloader,
     class_names,
 ) = model_builder.initialize_model(
@@ -53,11 +62,22 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
     feature_extract=True,
     train_dir=train_dir,
     test_dir=test_dir,
+    val_dir=val_dir,
+    batch_size=BATCH_SIZE,
 )
 
 
 # Set loss and optimizer
-loss_fn = torch.nn.CrossEntropyLoss()
+if USE_CLASS_WEIGHTS:
+    # uses class weights with focal losss function
+    print("Creating.. Focal Loss Function with class weights")
+    loss_fn = custom_focal_loss.create_focal_loss_criterion(
+        train_dataloader, class_names, gamma=2
+    )
+    print("Created Focal Loss Function with class weights")
+else:
+    # Uses default loss function
+    loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 # Create summary writer to track experiment
@@ -68,6 +88,7 @@ writer = create_writer("doc_classification", MODEL_NAME, f"{EPOCHS} epochs")
 engine.train(
     model=model,
     train_dataloader=train_dataloader,
+    val_dataloader=val_dataloader,
     test_dataloader=test_dataloader,
     loss_fn=loss_fn,
     optimizer=optimizer,

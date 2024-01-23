@@ -59,7 +59,7 @@ def train_step(
     return train_loss, train_acc, confusion_matrix
 
 
-def test_step(
+def val_step(
     model: torch.nn.Module,
     dataloader: torch.utils.data.DataLoader,
     loss_fn: torch.nn.Module,
@@ -69,7 +69,7 @@ def test_step(
     model.eval()
 
     # Setup test loss and test accuracy values
-    test_loss, test_acc = 0, 0
+    val_loss, val_acc = 0, 0
 
     confusion_matrix = torch.zeros((4, 4), dtype=torch.float32)
 
@@ -81,21 +81,21 @@ def test_step(
             X, y = X.to(device), y.to(device)
 
             # 1. Forward pass
-            test_pred_logits = model(X)
+            val_pred_logits = model(X)
 
             # 2. Calculate and accumulate loss
-            loss = loss_fn(test_pred_logits, y)
-            test_loss += loss.item()
+            loss = loss_fn(val_pred_logits, y)
+            val_loss += loss.item()
 
             # Calculate and accumulate accuracy
-            test_pred_labels = test_pred_logits.argmax(dim=1)
-            test_acc += (test_pred_labels == y).sum().item() / len(test_pred_labels)
-            confusion_matrix += calculate_confusion_matrix(test_pred_labels, y)
+            val_pred_labels = val_pred_logits.argmax(dim=1)
+            val_acc += (val_pred_labels == y).sum().item() / len(val_pred_labels)
+            confusion_matrix += calculate_confusion_matrix(val_pred_labels, y)
 
     # Adjust metrics to get average loss and accuracy per batch
-    test_loss = test_loss / len(dataloader)
-    test_acc = test_acc / len(dataloader)
-    return test_loss, test_acc, confusion_matrix
+    val_loss = val_loss / len(dataloader)
+    val_acc = val_acc / len(dataloader)
+    return val_loss, val_acc, confusion_matrix
 
 
 from tqdm.auto import tqdm
@@ -104,6 +104,7 @@ from tqdm.auto import tqdm
 def train(
     model: torch.nn.Module,
     train_dataloader: torch.utils.data.DataLoader,
+    val_dataloader: torch.utils.data.DataLoader,
     test_dataloader: torch.utils.data.DataLoader,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
@@ -115,7 +116,7 @@ def train(
 ):
 
     # 2. Create empty results dictionary
-    results = {"train_loss": [], "train_acc": [], "test_loss": [], "test_acc": []}
+    results = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
 
     # 3. Loop through training and testing steps for a number of epochs
     for epoch in tqdm(range(epochs)):
@@ -126,8 +127,8 @@ def train(
             loss_fn=loss_fn,
             optimizer=optimizer,
         )
-        test_loss, test_acc, test_conf_matrix = test_step(
-            model=model, dataloader=test_dataloader, loss_fn=loss_fn, device=device
+        val_loss, val_acc, val_conf_matrix = val_step(
+            model=model, dataloader=val_dataloader, loss_fn=loss_fn, device=device
         )
 
         # 4. Print out what's happening
@@ -135,15 +136,15 @@ def train(
             f"Epoch: {epoch+1} | "
             f"train_loss: {train_loss:.4f} | "
             f"train_acc: {train_acc:.4f} | "
-            f"test_loss: {test_loss:.4f} | "
-            f"test_acc: {test_acc:.4f}"
+            f"val_loss: {val_loss:.4f} | "
+            f"val_acc: {val_acc:.4f}"
         )
 
         # 5. Update results dictionary
         results["train_loss"].append(train_loss)
         results["train_acc"].append(train_acc)
-        results["test_loss"].append(test_loss)
-        results["test_acc"].append(test_acc)
+        results["val_loss"].append(val_loss)
+        results["val_acc"].append(val_acc)
 
         # # Print and log confusion matrices
         # print("Train Confusion Matrix:")
@@ -153,25 +154,25 @@ def train(
 
         # generate images of confusion marix
         train_conf_fig = save_confusion_matrix(train_conf_matrix)
-        test_conf_fig = save_confusion_matrix(test_conf_matrix)
+        val_conf_fig = save_confusion_matrix(val_conf_matrix)
 
         if track_experiment:
             # Experiment tracking
             # Add loss results to SummaryWriter
             writer.add_scalars(
                 main_tag="Loss",
-                tag_scalar_dict={"train_loss": train_loss, "test_loss": test_loss},
+                tag_scalar_dict={"train_loss": train_loss, "val_loss": val_loss},
                 global_step=epoch,
             )
 
             # Add confusion matrix image to SummaryWriter
             writer.add_figure("train_conf_fig", train_conf_fig, global_step=epoch)
-            writer.add_figure("test_conf_fig", test_conf_fig, global_step=epoch)
+            writer.add_figure("val_conf_fig", val_conf_fig, global_step=epoch)
 
             # Add accuracy results to SummaryWriter
             writer.add_scalars(
                 main_tag="Accuracy",
-                tag_scalar_dict={"train_acc": train_acc, "test_acc": test_acc},
+                tag_scalar_dict={"train_acc": train_acc, "val_acc": val_acc},
                 global_step=epoch,
             )
 
